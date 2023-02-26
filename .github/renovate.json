@@ -1,0 +1,38 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "addLabels": [
+        "Renovate 🤖"
+    ],
+    "automergeType": "pr",
+    "automergeStrategy": "squash",
+    "dependencyDashboard": false,
+    "draftPR": false,
+    "lockFileMaintenance": {
+        "enabled": true,
+        "automerge": true
+    },
+    "rangeStrategy": "pin",
+    "patch": {
+        "automerge": true
+    },
+    "minor": {
+        "automerge": true
+    },
+    "major": {
+        "automerge": true
+    },
+    "vulnerabilityAlerts": {
+        "enabled": true,
+        "automerge": true
+    },
+    "packageRules": [
+        {
+            "matchDepTypes": [
+                "engines"
+            ],
+            "rangeStrategy": "bump",
+            "groupName": "bump engines",
+            "automerge": false
+        }
+    ]
+}
