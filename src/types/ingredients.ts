@@ -140,7 +140,7 @@ export const Fall: Season = {
     ...springIngredients,
   ],
   firstDay: new Date(`${new Date().getFullYear()}-09-23`),
-};
+} as const;
 
 export const Winter: Season = {
   season: "winter",

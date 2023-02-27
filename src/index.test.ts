@@ -1,4 +1,4 @@
-import { findSeason } from ".";
+import { findSeason, transformParamsSpoonacular } from ".";
 import { Fall, Spring, Summer, Winter } from "./types/ingredients";
 
 describe("Season helpers", () => {
@@ -36,5 +36,29 @@ describe("Season helpers", () => {
     expect(
       await findSeason(new Date(`${new Date().getFullYear()}-04-19`)),
     ).toBe(Winter);
+  });
+});
+
+describe("Tranformation of Spoonacular params", () => {
+  it("throws an error if params is empty", async () => {
+    await expect(transformParamsSpoonacular([], "AND")).rejects.toThrow(
+      Error("No params provided"),
+    );
+  });
+
+  it("returns a single param if only one provided", async () => {
+    expect(await transformParamsSpoonacular(["blah"], "AND")).toEqual("blah");
+  });
+
+  it("correctly splits for AND operator", async () => {
+    expect(await transformParamsSpoonacular(["this", "that"], "AND")).toEqual(
+      "this,that",
+    );
+  });
+
+  it("correctly splits for OR operator", async () => {
+    expect(await transformParamsSpoonacular(["this", "that"], "OR")).toEqual(
+      "this|that",
+    );
   });
 });
