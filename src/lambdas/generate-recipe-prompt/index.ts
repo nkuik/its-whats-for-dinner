@@ -1,6 +1,6 @@
 import { Context, EventBridgeEvent } from "aws-lambda";
 import { ChatProps } from "../../chat";
-import { RecipeProps, formatRecipePrompt } from "../../recipes";
+import { RecipeProps, formatRecipePrompt } from "../../recipes/recipes";
 import { findSeason } from "../../seasons";
 
 const systemMessage = `You are a chef living in Denmark. You provide concise advice and recipes in each response`;
@@ -13,17 +13,23 @@ export const lambdaHandler = async (
   console.log("context: ", context);
 
   // TODO: retrieveHistoricRecipes()
-  // TODO: Retrieve API key from system params
+  // Retrieve specific number of recipes
+  /** for every recipe
+   *     pass in historic recipes
+   */
 
   const recipeDetails: RecipeProps = {
-    maxTime: 45,
-    country: "Denmark",
+    estimatedTime: 45,
+    countryOfOrigin: "Denmark",
     season: await findSeason(new Date()),
-    pastRecipes: [],
-    numberOfAdults: 2,
-    substituteCategories: ["cream"],
-    measurementSystem: "metric",
+    avoidIngredients: [],
     avoidProteins: ["beef"],
+    avoidRecipes: [],
+    possibleCuisines: [],
+    possibleLeftoverRecipes: [],
+    servings: 2,
+    substituteIngredients: ["cream"],
+    systemOfMeasurement: "metric",
     diet: "preferably vegetarian",
     type: "main course",
   };
