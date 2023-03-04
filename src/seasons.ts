@@ -4,7 +4,7 @@ import {
   springIngredients,
   summerIngredients,
   winterIngredients,
-} from "./ingredients";
+} from "./ingredients.js";
 
 export type Season = {
   season: "winter" | "fall" | "spring" | "summer";

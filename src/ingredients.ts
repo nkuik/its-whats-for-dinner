@@ -1,4 +1,4 @@
-type Protein =
+export type Protein =
   | "tofu"
   | "lentils"
   | "chickpeas"
@@ -8,7 +8,9 @@ type Protein =
   | "pork"
   | "cod"
   | "laks"
-  | "salmon";
+  | "salmon"
+  | "beef"
+  ;
 
 type ProteinBase = {
   fish: ReadonlyArray<Protein>;
