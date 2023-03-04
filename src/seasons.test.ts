@@ -1,5 +1,4 @@
-import { findSeason } from ".";
-import { Fall, Spring, Summer, Winter } from "./types/ingredients";
+import { Fall, Spring, Summer, Winter, findSeason } from "./seasons";
 
 describe("Season helpers", () => {
   it("can find spring based on the date", async () => {
