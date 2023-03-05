@@ -1,4 +1,4 @@
-type ShadowChatMessage = {
+export type ShadowChatMessage = {
   role: "user" | "assistant" | "system";
   id: string;
   parentMessageId: string;
@@ -42,15 +42,8 @@ type ShadowSendMessageOptions = {
   abortSignal?: AbortSignal;
 };
 
-export async function chatWithRobot(
-  prompt: string,
-  apiOptions: ShadowChatGPTAPIOptions,
-  sendMessageOptions: ShadowSendMessageOptions,
-): Promise<ShadowChatMessage> {
-  const chatgpt = await import("chatgpt");
-  const api = new chatgpt.ChatGPTAPI(apiOptions);
-  return (await api.sendMessage(
-    prompt,
-    sendMessageOptions,
-  )) as ShadowChatMessage;
-}
+export type ChatProps = {
+  prompt: string;
+  apiOptions: ShadowChatGPTAPIOptions;
+  sendMessageOptions: ShadowSendMessageOptions;
+};

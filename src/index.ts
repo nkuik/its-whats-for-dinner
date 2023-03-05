@@ -1,4 +1,4 @@
-import { chatWithRobot } from "./chat";
+import { lambdaHandler } from "./lambdas/chat";
 import { RecipeProps, formatRecipePrompt, parseRecipe } from "./recipes";
 import { findSeason } from "./seasons";
 
@@ -19,11 +19,11 @@ async function getRecipe(): Promise<void> {
   };
 
   const recipePrompt = await formatRecipePrompt(recipeDetails);
-  const chatMsg = await chatWithRobot(
-    recipePrompt,
-    { systemMessage, apiKey: process.env.OPENAI_API_KEY || "" },
-    {},
-  );
+  const chatMsg = await lambdaHandler({
+    prompt: recipePrompt,
+    apiOptions: { systemMessage, apiKey: process.env.OPENAI_API_KEY || "" },
+    sendMessageOptions: {},
+  });
 
   console.log("first", chatMsg.text);
   const parsedRecipe = await parseRecipe(chatMsg.text);
@@ -35,15 +35,13 @@ async function getRecipe(): Promise<void> {
   recipeDetails.type = "salad";
 
   const recipePrompt2 = await formatRecipePrompt(recipeDetails);
-  const chatMsg2 = await chatWithRobot(
-    recipePrompt2,
-    { systemMessage, apiKey: process.env.OPENAI_API_KEY || "" },
-    {},
-  );
+  const chatMsg2 = await lambdaHandler({
+    prompt: recipePrompt2,
+    apiOptions: { systemMessage, apiKey: process.env.OPENAI_API_KEY || "" },
+    sendMessageOptions: {},
+  });
 
   console.log("second", chatMsg2.text);
 }
 
 getRecipe();
-
-// TODO: persistRecipe()
