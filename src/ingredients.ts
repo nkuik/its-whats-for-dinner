@@ -9,8 +9,7 @@ export type Protein =
   | "cod"
   | "laks"
   | "salmon"
-  | "beef"
-  ;
+  | "beef";
 
 type ProteinBase = {
   fish: ReadonlyArray<Protein>;

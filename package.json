@@ -6,7 +6,6 @@
     "node": "18"
   },
   "source": "./src/index.ts",
-  "type": "module",
   "devDependencies": {
     "@types/jest": "29.2.3",
     "@types/node": "18.14.1",
@@ -32,7 +31,7 @@
     "test": "jest --coverage --runInBand",
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "jest --watch",
-    "index": "ts-node --esm src/index.ts"
+    "index": "ts-node src/index.ts"
   },
   "dependencies": {
     "chatgpt": "5.0.6",

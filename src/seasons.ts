@@ -1,69 +1,16 @@
-import {
-  fallIngredients,
-  SeasonalIngredient,
-  springIngredients,
-  summerIngredients,
-  winterIngredients,
-} from "./ingredients.js";
-
-export type Season = {
-  season: "winter" | "fall" | "spring" | "summer";
-  seasonalIngredients: ReadonlyArray<SeasonalIngredient>;
-  ingredientsToAvoid: ReadonlyArray<SeasonalIngredient>;
-  firstDay: Date;
-};
-
-export const Spring: Season = {
-  season: "spring",
-  seasonalIngredients: springIngredients,
-  ingredientsToAvoid: [
-    ...fallIngredients,
-    ...winterIngredients,
-    ...summerIngredients,
-  ],
-  firstDay: new Date(`${new Date().getFullYear()}-04-20`),
-} as const;
-
-export const Summer: Season = {
-  season: "summer",
-  seasonalIngredients: summerIngredients,
-  ingredientsToAvoid: [
-    ...fallIngredients,
-    ...winterIngredients,
-    ...springIngredients,
-  ],
-  firstDay: new Date(`${new Date().getFullYear()}-06-21`),
-} as const;
-
-export const Fall: Season = {
-  season: "fall",
-  seasonalIngredients: fallIngredients,
-  ingredientsToAvoid: [
-    ...winterIngredients,
-    ...summerIngredients,
-    ...springIngredients,
-  ],
-  firstDay: new Date(`${new Date().getFullYear()}-09-23`),
-} as const;
-
-export const Winter: Season = {
-  season: "winter",
-  seasonalIngredients: winterIngredients,
-  ingredientsToAvoid: [
-    ...fallIngredients,
-    ...summerIngredients,
-    ...springIngredients,
-  ],
-  firstDay: new Date(`${new Date().getFullYear()}-12-21`),
-} as const;
+export type Season = "winter" | "autumn" | "spring" | "summer";
 
 export const findSeason = async (dateObj: Date): Promise<Season> => {
-  if (Spring.firstDay <= dateObj && dateObj < Summer.firstDay) {
-    return Spring;
-  } else if (Summer.firstDay <= dateObj && dateObj < Fall.firstDay) {
-    return Summer;
-  } else if (Fall.firstDay <= dateObj && dateObj < Winter.firstDay) {
-    return Fall;
+  const firstDaySpring = new Date(`${dateObj.getFullYear()}-04-20`);
+  const firstDaySummer = new Date(`${dateObj.getFullYear()}-06-21`);
+  const firstDayAutumn = new Date(`${dateObj.getFullYear()}-09-23`);
+  const firstDayWinter = new Date(`${dateObj.getFullYear()}-12-21`);
+  if (firstDaySpring <= dateObj && dateObj < firstDaySummer) {
+    return "spring";
+  } else if (firstDaySummer <= dateObj && dateObj < firstDayAutumn) {
+    return "summer";
+  } else if (firstDayAutumn <= dateObj && dateObj < firstDayWinter) {
+    return "autumn";
   }
-  return Winter;
+  return "winter";
 };

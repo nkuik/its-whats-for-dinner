@@ -15,6 +15,7 @@ module.exports = {
         "@mocks/(.*)": "<rootDir>/mocks/$1",
         "@utils/(.*)": "<rootDir>/lib/utils/$1",
       },
+      extensionsToTreatAsEsm: [".ts"],
     },
   ],
 };
