@@ -27,6 +27,7 @@ async function getRecipe(): Promise<void> {
 
   console.log("first", chatMsg.text);
   const parsedRecipe = await parseRecipe(chatMsg.text);
+  console.log(parsedRecipe);
 
   if (parsedRecipe.title) {
     recipeDetails.pastRecipes.push(parsedRecipe.title);

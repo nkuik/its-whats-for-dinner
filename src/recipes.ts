@@ -32,21 +32,22 @@ type Recipe = {
 };
 
 export async function parseRecipe(recipe: string): Promise<Recipe> {
-  const maybeTitle = /Title: (?<title>.+)/.exec(recipe);
-  const maybeCuisine = /Cuisine: (?<cuisine>.+)/.exec(recipe);
-  const maybeDiet = /Diet: (?<diet>.+)/.exec(recipe);
-  const maybeType = /Type: (?<type>.+)/.exec(recipe);
-  const maybeEstimatedTime = /Estimated time: (?<estimatedTime>.+)/.exec(
-    recipe,
-  );
+  const parsedValues =
+    /Title: (?<title>.+)|Cuisine: (?<cuisine>.+)|Diet: (?<diet>.+)|Type: (?<type>.+)|Estimated time: (?<estimatedTime>.+)/.exec(
+      recipe,
+    );
 
   return {
-    title: maybeTitle?.groups?.title,
-    cuisine: maybeCuisine?.groups?.cuisine,
-    diet: maybeDiet?.groups?.diet,
-    estimatedTime: maybeEstimatedTime?.groups?.estimatedTime,
-    type: maybeType?.groups?.type,
+    title: parsedValues?.groups?.title,
+    cuisine: parsedValues?.groups?.cuisine,
+    diet: parsedValues?.groups?.diet,
+    estimatedTime: parsedValues?.groups?.estimatedTime,
+    type: parsedValues?.groups?.type,
   };
+}
+
+export async function formatList(list: ReadonlyArray<string>): Promise<string> {
+  return `${list.length > 0 ? "- " : ""}${list.join("\n- ")}`;
 }
 
 export async function formatRecipePrompt(
@@ -57,9 +58,7 @@ export async function formatRecipePrompt(
 Type: ${recipeProps.type}
 
 It should avoid the following ingredients:
-${
-  recipeProps.avoidProteins.length > 0 ? "- " : ""
-}${recipeProps.avoidProteins.join("\n- ")}
+${await formatList(recipeProps.avoidProteins)}
 
 Most ingredients should be available during: ${recipeProps.season} in ${
     recipeProps.country
@@ -73,14 +72,11 @@ Provide possible substitutes for: ${recipeProps.substituteCategories.join(
   )} 
 
 Previous recipe titles included the following list. Please avoid recipes similar to these:
-${recipeProps.pastRecipes.length > 0 ? "- " : ""}${recipeProps.pastRecipes.join(
-    "\n- ",
-  )}
+
+${await formatList(recipeProps.pastRecipes)}
 
 There might be ingredients remaining from these ingredients, so prefer recipes with similar ingredients as these recipes:
-${recipeProps.pastRecipes.length > 0 ? "- " : ""}${recipeProps.pastRecipes.join(
-    "\n- ",
-  )}
+${await formatList(recipeProps.pastRecipes)}
 
 The recipe should have the following format:
 
