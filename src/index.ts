@@ -1,12 +1,47 @@
-import { Fall, Season, Spring, Summer, Winter } from "./types/ingredients";
+import { lambdaHandler } from "./lambdas/chat";
+import { RecipeProps, formatRecipePrompt, parseRecipe } from "./recipes";
+import { findSeason } from "./seasons";
 
-export const findSeason = async (dateObj: Date): Promise<Season> => {
-  if (Spring.firstDay <= dateObj && dateObj < Summer.firstDay) {
-    return Spring;
-  } else if (Summer.firstDay <= dateObj && dateObj < Fall.firstDay) {
-    return Summer;
-  } else if (Fall.firstDay <= dateObj && dateObj < Winter.firstDay) {
-    return Fall;
+const systemMessage = `You are a chef living in Denmark. You provide concise advice and recipes in each response`;
+
+async function getRecipe(): Promise<void> {
+  const recipeDetails: RecipeProps = {
+    maxTime: 45,
+    country: "Denmark",
+    season: await findSeason(new Date()),
+    pastRecipes: [],
+    numberOfAdults: 2,
+    substituteCategories: ["cream"],
+    measurementSystem: "metric",
+    avoidProteins: ["beef"],
+    diet: "preferably vegetarian",
+    type: "main course",
+  };
+
+  const recipePrompt = await formatRecipePrompt(recipeDetails);
+  const chatMsg = await lambdaHandler({
+    prompt: recipePrompt,
+    apiOptions: { systemMessage, apiKey: process.env.OPENAI_API_KEY || "" },
+    sendMessageOptions: {},
+  });
+
+  console.log("first", chatMsg.text);
+  const parsedRecipe = await parseRecipe(chatMsg.text);
+  console.log(parsedRecipe);
+
+  if (parsedRecipe.title) {
+    recipeDetails.pastRecipes.push(parsedRecipe.title);
   }
-  return Winter;
-};
+  recipeDetails.type = "salad";
+
+  const recipePrompt2 = await formatRecipePrompt(recipeDetails);
+  const chatMsg2 = await lambdaHandler({
+    prompt: recipePrompt2,
+    apiOptions: { systemMessage, apiKey: process.env.OPENAI_API_KEY || "" },
+    sendMessageOptions: {},
+  });
+
+  console.log("second", chatMsg2.text);
+}
+
+getRecipe();

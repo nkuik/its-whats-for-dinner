@@ -1,40 +1,39 @@
-import { findSeason } from ".";
-import { Fall, Spring, Summer, Winter } from "./types/ingredients";
+import { findSeason } from "./seasons";
 
 describe("Season helpers", () => {
   it("can find spring based on the date", async () => {
     expect(
       await findSeason(new Date(`${new Date().getFullYear()}-04-20`)),
-    ).toBe(Spring);
+    ).toBe("spring");
     expect(
       await findSeason(new Date(`${new Date().getFullYear()}-06-20`)),
-    ).toBe(Spring);
+    ).toBe("spring");
   });
 
   it("can find summer based on the date", async () => {
     expect(
       await findSeason(new Date(`${new Date().getFullYear()}-06-21`)),
-    ).toBe(Summer);
+    ).toBe("summer");
     expect(
       await findSeason(new Date(`${new Date().getFullYear()}-09-22`)),
-    ).toBe(Summer);
+    ).toBe("summer");
   });
 
   it("can find fall based on the date", async () => {
     expect(
       await findSeason(new Date(`${new Date().getFullYear()}-09-23`)),
-    ).toBe(Fall);
+    ).toBe("autumn");
     expect(
       await findSeason(new Date(`${new Date().getFullYear()}-12-20`)),
-    ).toBe(Fall);
+    ).toBe("autumn");
   });
 
   it("can find winter based on the date", async () => {
     expect(
       await findSeason(new Date(`${new Date().getFullYear()}-12-21`)),
-    ).toBe(Winter);
+    ).toBe("winter");
     expect(
       await findSeason(new Date(`${new Date().getFullYear()}-04-19`)),
-    ).toBe(Winter);
+    ).toBe("winter");
   });
 });
