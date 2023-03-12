@@ -1,14 +1,13 @@
-import { Context, EventBridgeEvent } from "aws-lambda";
-import { ChatProps } from "../../chat";
-import { RecipeProps, formatRecipePrompt } from "../../recipes/recipes";
+import { Context } from "aws-lambda";
+import { RecipeAndChatMessage, RecipeProps } from "../../recipes/recipes";
 import { findSeason } from "../../seasons/seasons";
 
 const systemMessage = `You are a chef living in Denmark. You provide concise advice and recipes in each response`;
 
 export const lambdaHandler = async (
-  event: EventBridgeEvent<"Scheduled Event", any>,
+  recipes: Array<RecipeAndChatMessage>,
   context: Context,
-): Promise<ChatProps> => {
+): Promise<Array<RecipeAndChatMessage>> => {
   console.log("event: ", event);
   console.log("context: ", context);
 
@@ -34,9 +33,12 @@ export const lambdaHandler = async (
     type: "main course",
   };
 
-  return {
-    prompt: await formatRecipePrompt(recipeDetails),
-    apiOptions: { systemMessage, apiKey: process.env.OPENAI_API_KEY || "" },
-    sendMessageOptions: {},
-  };
+  // Call chat lambda
+  // {
+  //   prompt: await formatRecipePrompt(recipeDetails),
+  //   apiOptions: { systemMessage, apiKey: process.env.OPENAI_API_KEY || "" },
+  //   sendMessageOptions: {},
+  // };
+
+  return [];
 };
