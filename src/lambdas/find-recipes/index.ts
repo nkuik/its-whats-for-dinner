@@ -1,7 +1,7 @@
 import { Context, EventBridgeEvent } from "aws-lambda";
 import { ChatProps } from "../../chat";
 import { RecipeProps, formatRecipePrompt } from "../../recipes/recipes";
-import { findSeason } from "../../seasons";
+import { findSeason } from "../../seasons/seasons";
 
 const systemMessage = `You are a chef living in Denmark. You provide concise advice and recipes in each response`;
 

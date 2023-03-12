@@ -3,9 +3,9 @@ import {
   ShadowChatMessage,
   ShadowSendMessageOptions,
 } from "../chat";
-import { Protein, SeasonalIngredient } from "../ingredients";
+import { Protein, SeasonalIngredient } from "../ingredients/ingredients";
 import { lambdaHandler } from "../lambdas/chat";
-import { Season } from "../seasons";
+import { Season } from "../seasons/seasons";
 import recipeSchema from "./recipe_schema.json";
 
 type Diet =

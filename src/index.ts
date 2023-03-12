@@ -1,6 +1,6 @@
 import { lambdaHandler } from "./lambdas/chat";
 import { RecipeProps, formatRecipePrompt, parseRecipe } from "./recipes";
-import { findSeason } from "./seasons";
+import { findSeason } from "./seasons/seasons";
 
 const systemMessage = `You are a chef living in Denmark. You provide concise advice and recipes in each response`;
 
