@@ -1,0 +1,66 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$id": "https://example.com/employee.schema.json",
+    "title": "Recipe a la ChatGPT",
+    "description": "This is a recipe generated via ChatGPT :)",
+    "type": "object",
+    "properties": {
+        "countryOfOrigin": {
+            "description": "The country from which the recipe originates",
+            "type": "string"
+        },
+        "cuisine": {
+            "description": "The cuisine of the recipe",
+            "type": "string"
+        },
+        "diet": {
+            "description": "The diet of the recipe",
+            "type": "string"
+        },
+        "estimatedTime": {
+            "description": "The estimated time (in minutes) needed to complete the recipe",
+            "type": "number"
+        },
+        "season": {
+            "description": "The season most appropriate for the recipe",
+            "type": "string"
+        },
+        "servings": {
+            "description": "The number of adult servings the recipe can feed",
+            "type": "number"
+        },
+        "systemOfMeasurement": {
+            "description": "Imperial or metric",
+            "type": "number"
+        },
+        "title": {
+            "description": "The title of the recipe",
+            "type": "string"
+        },
+        "type": {
+            "description": "The type of recipe. For example main dish, salad, dessert, etc.",
+            "type": "string"
+        },
+        "ingredients": {
+            "type": "array",
+            "items": {
+                "description": "List of ingredients, including their amount",
+                "type": "string"
+            }
+        },
+        "instructions": {
+            "type": "array",
+            "items": {
+                "description": "List of steps to complete the recipe",
+                "type": "string"
+            }
+        },
+        "substitutes": {
+            "type": "array",
+            "items": {
+                "description": "A list of possible substitutions",
+                "type": "string"
+            }
+        }
+    }
+}
