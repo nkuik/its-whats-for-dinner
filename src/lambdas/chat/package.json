@@ -1,0 +1,12 @@
+{
+  "name": "chat",
+  "version": "0.0.0",
+  "engines": {
+    "node": "18"
+  },
+  "source": "./index.ts",
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "3.289.0",
+    "chatgpt": "5.0.6"
+  }
+}

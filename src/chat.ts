@@ -10,8 +10,8 @@ export type ShadowChatMessage = {
   };
 };
 
-export type ShadowChatGPTAPIOptions = {
-  apiKey: string;
+export type MyChatGPTAPIOptions = {
+  apiKey?: string;
   /** @defaultValue `false` **/
   debug?: boolean;
   systemMessage?: string;
@@ -32,6 +32,10 @@ export type ShadowChatGPTAPIOptions = {
   };
 };
 
+export type ShadowChatGPTAPIOptions = MyChatGPTAPIOptions & {
+  apiKey: string;
+};
+
 export type ShadowSendMessageOptions = {
   name?: string;
   parentMessageId?: string;
@@ -44,6 +48,6 @@ export type ShadowSendMessageOptions = {
 
 export type ChatProps = {
   prompt: string;
-  apiOptions: ShadowChatGPTAPIOptions;
+  apiOptions: MyChatGPTAPIOptions;
   sendMessageOptions: ShadowSendMessageOptions;
 };
