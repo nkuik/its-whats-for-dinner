@@ -2,9 +2,8 @@ import { Context } from "aws-lambda";
 import { RecipeAndChatMessage } from "../../recipes/recipes";
 
 type RecipeRecord = {
-  [year: string]: {
-    [weekNumber: string]: Array<RecipeAndChatMessage>;
-  };
+  yearWeek: string;
+  recipes: RecipeAndChatMessage[];
 };
 
 const lambdaHandler = async (

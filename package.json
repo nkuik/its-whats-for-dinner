@@ -32,16 +32,17 @@
     "build:watch": "tsc -w -p tsconfig.json",
     "build:release": "npm run clean && tsc -p tsconfig.release.json",
     "lint": "eslint . --ext .ts --ext .mts",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --runInBand",
+    "test": "jest --coverage --runInBand",
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "jest --watch",
     "cdk": "cdk",
-    "deploy": "cdk deploy"
+    "deploy": "cdk deploy --all"
   },
   "dependencies": {
+    "@aws-sdk/client-lambda": "3.289.0",
     "@aws-sdk/client-secrets-manager": "3.289.0",
     "aws-sdk": "2.1328.0",
     "chatgpt": "5.0.6",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "0.5.21"
   }
 }

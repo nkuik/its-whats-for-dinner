@@ -1,10 +1,11 @@
+import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
 import {
-  ShadowChatGPTAPIOptions,
+  ChatProps,
+  MyChatGPTAPIOptions,
   ShadowChatMessage,
   ShadowSendMessageOptions,
 } from "../chat";
 import { Protein, SeasonalIngredient } from "../ingredients/ingredients";
-import { lambdaHandler } from "../lambdas/chat";
 import { Season } from "../seasons/seasons";
 import recipeSchema from "./recipe_schema.json";
 
@@ -55,35 +56,55 @@ export type RecipeAndChatMessage = {
 export type RecipeRetrievalOptions = {
   systemMessage: string;
   recipeProps: RecipeProps;
-  apiOptions: ShadowChatGPTAPIOptions;
+  apiOptions: MyChatGPTAPIOptions;
   sendMessageOptions: ShadowSendMessageOptions;
   necessaryProps: Array<keyof Recipe>;
+  lambdaClient: LambdaClient;
+  chatFunctionName: string;
   attemptLimit?: number;
 };
 
 export async function attemptRecipeRetrieval(
   retrievalOptions: RecipeRetrievalOptions,
-): Promise<Recipe | undefined> {
+): Promise<RecipeAndChatMessage | undefined> {
   if (!retrievalOptions.attemptLimit) {
     retrievalOptions.attemptLimit = 5;
   }
 
-  const chatMsg = await lambdaHandler({
+  const payload: ChatProps = {
     prompt: await formatRecipePrompt(retrievalOptions.recipeProps),
     apiOptions: retrievalOptions.apiOptions,
     sendMessageOptions: retrievalOptions.sendMessageOptions,
+  };
+
+  const cmd = new InvokeCommand({
+    FunctionName: retrievalOptions.chatFunctionName,
+    Payload: new TextEncoder().encode(JSON.stringify(payload)),
   });
+
   for (let i = 1; i <= retrievalOptions.attemptLimit; i++) {
     console.log(
       `Retrieving recipe, attempt ${i} of ${retrievalOptions.attemptLimit}`,
     );
+    const { Payload } = await retrievalOptions.lambdaClient.send(cmd);
+    if (!Payload) {
+      throw new Error("No payload received from chat lambda");
+    }
+
+    const result = JSON.parse(
+      Buffer.from(Payload).toString(),
+    ) as ShadowChatMessage;
+
     try {
-      const recipe = parseRecipe(chatMsg.text, retrievalOptions.necessaryProps);
-      return recipe;
+      return {
+        recipe: await parseRecipe(result.text, retrievalOptions.necessaryProps),
+        chatMessage: result,
+      };
     } catch (e) {
       console.log("Failed parsing recipe, attempting again...");
     }
   }
+
   return undefined;
 }
 

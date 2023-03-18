@@ -1,6 +1,7 @@
 import {
   Arn,
   ArnFormat,
+  CfnOutput,
   Duration,
   Stack,
   StackProps,
@@ -78,5 +79,15 @@ export class ChatStack extends Stack {
         "service-role/AWSLambdaBasicExecutionRole",
       ),
     );
+
+    new CfnOutput(this, "chatLambdaName", {
+      value: chatLambda.functionName,
+      exportName: "chatLambdaName",
+    });
+
+    new CfnOutput(this, "chatLambdaArns", {
+      value: chatLambda.resourceArnsForGrantInvoke.join(","),
+      exportName: "chatLambdaArns",
+    });
   }
 }

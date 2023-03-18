@@ -98,8 +98,5 @@ dist
 # TernJS port file
 .tern-port
 
-# .zip
-*.zip
-
 # cdk
 cdk.out
