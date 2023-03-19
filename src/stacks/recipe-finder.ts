@@ -78,6 +78,7 @@ export class RecipeFinderStack extends Stack {
       environment: {
         CHAT_LAMBDA_NAME: chatLambdaName,
       },
+      timeout: Duration.minutes(5),
     });
 
     findRecipes.role?.attachInlinePolicy(
@@ -87,6 +88,31 @@ export class RecipeFinderStack extends Stack {
     );
 
     findRecipes.role?.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName(
+        "service-role/AWSLambdaBasicExecutionRole",
+      ),
+    );
+
+    const putItem = new iam.PolicyStatement({
+      actions: ["dynamodb:PutItem"],
+      resources: [historicTable.tableArn],
+    });
+
+    const persistRecipes = new NodejsFunction(this, "persistRecipes", {
+      ...lambdaProps,
+      entry: path.join(__dirname, `/../lambdas/persist-recipes/index.ts`),
+      environment: {
+        DYNAMODB_TABLE_NAME: historicTable.tableName,
+      },
+    });
+
+    persistRecipes.role?.attachInlinePolicy(
+      new iam.Policy(this, "PersistRecipesPutItem", {
+        statements: [getItem, putItem],
+      }),
+    );
+
+    persistRecipes.role?.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName(
         "service-role/AWSLambdaBasicExecutionRole",
       ),

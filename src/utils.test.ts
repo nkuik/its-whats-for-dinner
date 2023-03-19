@@ -1,4 +1,4 @@
-import { calculateWeekNumber } from ".";
+import { buildYearWeek, calculateWeekNumber } from "./utils";
 
 describe("calculateWeekNumber", () => {
   it("correctly calculates the first week of the year", async () => {
@@ -9,3 +9,10 @@ describe("calculateWeekNumber", () => {
     expect(await calculateWeekNumber(new Date("2020-12-31"))).toEqual(53);
   });
 });
+
+describe("buildYearWeek", () => {
+  it("correctly concatenates year and week number", async () => {
+    expect(await buildYearWeek(new Date("2022-01-02"))).toEqual("2022-1");
+  });
+});
+

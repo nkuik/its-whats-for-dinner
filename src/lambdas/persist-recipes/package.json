@@ -1,0 +1,12 @@
+{
+    "name": "persist-recipes",
+    "version": "0.0.0",
+    "engines": {
+        "node": "18"
+    },
+    "source": "./index.ts",
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "3.289.0",
+        "@aws-sdk/lib-dynamodb": "3.289.0"
+    }
+}
