@@ -1,28 +1,29 @@
+import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
 import {
-  ShadowChatGPTAPIOptions,
+  ChatProps,
+  MyChatGPTAPIOptions,
   ShadowChatMessage,
   ShadowSendMessageOptions,
 } from "../chat";
-import { Protein, SeasonalIngredient } from "../ingredients";
-import { lambdaHandler } from "../lambdas/chat";
-import { Season } from "../seasons";
+import { Protein, SeasonalIngredient } from "../ingredients/ingredients";
+import { Season } from "../seasons/seasons";
 import recipeSchema from "./recipe_schema.json";
 
-type Diet =
+export type Diet =
   | "omnivore"
   | "pescatarian"
   | "preferably vegetarian"
   | "vegan"
   | "vegetarian";
 
-type Recipe = {
+export type Recipe = {
   countryOfOrigin?: string;
   cuisine?: string;
   diet?: string;
   estimatedTime?: number;
   ingredients?: string;
   instructions?: string;
-  season?: Season;
+  timeOfYear?: Season | string;
   servings?: number;
   systemOfMeasurement?: string;
   title?: string;
@@ -35,7 +36,7 @@ export type RecipeProps = Pick<
   | "servings"
   | "countryOfOrigin"
   | "estimatedTime"
-  | "season"
+  | "timeOfYear"
   | "systemOfMeasurement"
 > & {
   diet: Diet;
@@ -55,35 +56,68 @@ export type RecipeAndChatMessage = {
 export type RecipeRetrievalOptions = {
   systemMessage: string;
   recipeProps: RecipeProps;
-  apiOptions: ShadowChatGPTAPIOptions;
+  apiOptions: MyChatGPTAPIOptions;
   sendMessageOptions: ShadowSendMessageOptions;
   necessaryProps: Array<keyof Recipe>;
+  lambdaClient: LambdaClient;
+  chatFunctionName: string;
   attemptLimit?: number;
+};
+
+export type RecipeRecord = {
+  yearWeek: string;
+  recipes?: RecipeAndChatMessage[];
+};
+
+export type GetRecipeRecordCommand = {
+  Key: RecipeRecord;
+};
+
+export type PutRecipeRecordCommand = {
+  Item: RecipeRecord;
 };
 
 export async function attemptRecipeRetrieval(
   retrievalOptions: RecipeRetrievalOptions,
-): Promise<Recipe | undefined> {
+): Promise<RecipeAndChatMessage | undefined> {
   if (!retrievalOptions.attemptLimit) {
     retrievalOptions.attemptLimit = 5;
   }
 
-  const chatMsg = await lambdaHandler({
+  const payload: ChatProps = {
     prompt: await formatRecipePrompt(retrievalOptions.recipeProps),
     apiOptions: retrievalOptions.apiOptions,
     sendMessageOptions: retrievalOptions.sendMessageOptions,
+  };
+
+  const cmd = new InvokeCommand({
+    FunctionName: retrievalOptions.chatFunctionName,
+    Payload: new TextEncoder().encode(JSON.stringify(payload)),
   });
+
   for (let i = 1; i <= retrievalOptions.attemptLimit; i++) {
     console.log(
       `Retrieving recipe, attempt ${i} of ${retrievalOptions.attemptLimit}`,
     );
+    const { Payload } = await retrievalOptions.lambdaClient.send(cmd);
+    if (!Payload) {
+      throw new Error("No payload received from chat lambda");
+    }
+
+    const result = JSON.parse(
+      Buffer.from(Payload).toString(),
+    ) as ShadowChatMessage;
+
     try {
-      const recipe = parseRecipe(chatMsg.text, retrievalOptions.necessaryProps);
-      return recipe;
+      return {
+        recipe: await parseRecipe(result.text, retrievalOptions.necessaryProps),
+        chatMessage: result,
+      };
     } catch (e) {
       console.log("Failed parsing recipe, attempting again...");
     }
   }
+
   return undefined;
 }
 
@@ -120,7 +154,7 @@ Type: ${recipeProps.type}
 It should avoid the following ingredients:
 ${await formatList(recipeProps.avoidProteins)}
 
-Most ingredients should be available during: ${recipeProps.season} in ${
+Most ingredients should be available during: ${recipeProps.timeOfYear} in ${
     recipeProps.countryOfOrigin
   } 
 
@@ -136,19 +170,19 @@ Provide possible substitutes these ingredients if the recipe includes them: ${re
     ", ",
   )} 
 
-Possible cuisines include:
+Choose one of these cuisines:
 ${await formatList(recipeProps.possibleCuisines)}
 
-Previous recipe titles included the following list. Please avoid recipes similar to these:
+Previous recipe titles included the following list. Avoid recipes similar to these:
 ${await formatList(recipeProps.avoidRecipes)}
 
 There might be ingredients remaining from these ingredients, so prefer recipes with similar ingredients as these recipes:
 ${await formatList(recipeProps.possibleLeftoverRecipes)}
 
-Please avoid these ingredients if possible:
+Avoid these ingredients if possible:
 ${await formatList(recipeProps.avoidIngredients)}
 
-JSON schema to adhere to: ${JSON.stringify(recipeSchema)}
+Your response should adhere to this JSON schema: ${JSON.stringify(recipeSchema)}
 
 Provide only the JSON object in your message.
 `;

@@ -97,3 +97,9 @@ dist
 
 # TernJS port file
 .tern-port
+
+# cdk
+cdk.out
+
+# .DS_Store
+.DS_Store

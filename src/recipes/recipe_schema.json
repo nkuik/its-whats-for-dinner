@@ -21,8 +21,8 @@
             "description": "The estimated time (in minutes) needed to complete the recipe",
             "type": "number"
         },
-        "season": {
-            "description": "The season most appropriate for the recipe",
+        "timeOfYear": {
+            "description": "Month or season most appropriate for the recipe",
             "type": "string"
         },
         "servings": {

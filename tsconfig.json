@@ -25,7 +25,7 @@
     "dist"
   ],
   "include": [
-    "**/*.ts",
-    "src/chat.ts"
+    "bin",
+    "src/",
   ]
 }

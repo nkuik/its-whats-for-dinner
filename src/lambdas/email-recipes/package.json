@@ -1,0 +1,11 @@
+{
+    "name": "email-recipes",
+    "version": "0.0.0",
+    "engines": {
+        "node": "18"
+    },
+    "source": "./index.ts",
+    "dependencies": {
+        "@aws-sdk/client-sns": "^3.289.0"
+    }
+}
