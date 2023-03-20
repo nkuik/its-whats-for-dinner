@@ -9,7 +9,7 @@ import {
 import { getPreviousYearWeek } from "../../utils";
 
 export const lambdaHandler = async (
-  event: EventBridgeEvent<"Scheduled Event", any>,
+  event: EventBridgeEvent<"Scheduled Event", unknown>,
   context: Context,
 ): Promise<MenuRequest> => {
   console.log(`event: ${event}`);
