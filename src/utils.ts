@@ -11,3 +11,15 @@ export const calculateWeekNumber = async (
 export const buildYearWeek = async (dateObject: Date): Promise<string> => {
   return `${dateObject.getFullYear()}-${await calculateWeekNumber(dateObject)}`;
 };
+
+export const getPreviousYearWeek = async (
+  dateObject: Date,
+): Promise<string> => {
+  return buildYearWeek(
+    new Date(
+      dateObject.getFullYear(),
+      dateObject.getMonth(),
+      dateObject.getDate() - 7,
+    ),
+  );
+};

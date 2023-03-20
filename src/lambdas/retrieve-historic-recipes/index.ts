@@ -6,7 +6,7 @@ import {
   GetRecipeRecordCommand,
   RecipeAndChatMessage,
 } from "../../recipes/recipes";
-import { buildYearWeek } from "../../utils";
+import { getPreviousYearWeek } from "../../utils";
 
 export const lambdaHandler = async (
   event: EventBridgeEvent<"Scheduled Event", any>,
@@ -18,7 +18,7 @@ export const lambdaHandler = async (
   if (!process.env.DYNAMODB_TABLE_NAME) {
     throw new Error("Env var DYNAMODB_TABLE_NAME must be set");
   }
-  const yearWeek = await buildYearWeek(new Date());
+  const yearWeek = await getPreviousYearWeek(new Date());
 
   console.log(`Searching for recipes with yearWeek: ${yearWeek}`);
 

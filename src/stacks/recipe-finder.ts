@@ -3,6 +3,7 @@ import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import * as sns from "aws-cdk-lib/aws-sns";
 import { Construct } from "constructs";
 import * as path from "path";
 
@@ -42,7 +43,7 @@ export class RecipeFinderStack extends Stack {
 
     const retrieveHistoricRecipes = new NodejsFunction(
       this,
-      "retrieveHistoricRecipes",
+      "RetrieveHistoricRecipes",
       {
         ...lambdaProps,
         entry: path.join(
@@ -72,7 +73,7 @@ export class RecipeFinderStack extends Stack {
       resources: chatLambdaArns,
     });
 
-    const findRecipes = new NodejsFunction(this, "findRecipes", {
+    const findRecipes = new NodejsFunction(this, "FindRecipes", {
       ...lambdaProps,
       entry: path.join(__dirname, `/../lambdas/find-recipes/index.ts`),
       environment: {
@@ -98,7 +99,7 @@ export class RecipeFinderStack extends Stack {
       resources: [historicTable.tableArn],
     });
 
-    const persistRecipes = new NodejsFunction(this, "persistRecipes", {
+    const persistRecipes = new NodejsFunction(this, "PersistRecipes", {
       ...lambdaProps,
       entry: path.join(__dirname, `/../lambdas/persist-recipes/index.ts`),
       environment: {
@@ -117,5 +118,39 @@ export class RecipeFinderStack extends Stack {
         "service-role/AWSLambdaBasicExecutionRole",
       ),
     );
+
+    const notificationTopic = new sns.Topic(this, "RecipeNotificationTopic", {
+      displayName: "Recipe notification topic",
+      topicName: "recipeNotificationTopic",
+    });
+
+    const sendEmail = new iam.PolicyStatement({
+      actions: ["sns:Subscribe", "sns:Publish", "sns:ListSubscriptionsByTopic"],
+      resources: [notificationTopic.topicArn],
+    });
+
+    const emailRecipes = new NodejsFunction(this, "EmailRecipes", {
+      ...lambdaProps,
+      entry: path.join(__dirname, `/../lambdas/email-recipes/index.ts`),
+      environment: {
+        SNS_TOPIC_ARN: notificationTopic.topicArn,
+        EMAIL_ADDRESSES: "nathan.kuik@gmail.com",
+      },
+    });
+
+    emailRecipes.role?.attachInlinePolicy(
+      new iam.Policy(this, "EmailRecipesPolicy", {
+        statements: [sendEmail],
+      }),
+    );
+
+    emailRecipes.role?.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName(
+        "service-role/AWSLambdaBasicExecutionRole",
+      ),
+    );
+
+    // TODO: Step Function state machine
+    // TODO: EB cron trigger
   }
 }

@@ -50,7 +50,6 @@ export const lambdaHandler = async (
   recipesToPersist = recipesToPersist.concat(
     [menu.desserts, menu.mains, menu.desserts].flat(),
   );
-  console.log(`Recipes to persist: ${JSON.stringify(recipesToPersist)}`);
 
   const recipeRecord: PutRecipeRecordCommand = {
     Item: {

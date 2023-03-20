@@ -1,3 +1,3 @@
-# node-typescript-boilerplate
+# It's what's for dinner
 
-My boilerplate for TypeScript projects. Automatically updated dependencies via [Renovate](https://github.com/renovatebot/renovate).
+AWS Step Function to request some recipes from ChatGPT, with some persistence of past recipes.
