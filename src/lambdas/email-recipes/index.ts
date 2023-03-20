@@ -3,6 +3,7 @@ import {
   PublishCommand,
   SNSClient,
   SubscribeCommand,
+  Subscription,
 } from "@aws-sdk/client-sns";
 import { Context } from "aws-lambda";
 import { Menu } from "../../menu";
@@ -36,9 +37,9 @@ export const lambdaHandler = async (
       );
     }
     const emails =
-      subOutput.Subscriptions?.filter((sub) => sub.Protocol === "email").map(
-        (sub) => sub.Endpoint,
-      ) || [];
+      subOutput.Subscriptions?.filter(
+        (sub): sub is Subscription => sub.Protocol === "email",
+      ).map((sub) => sub.Endpoint) || [];
 
     process.env.EMAIL_ADDRESSES.split(",").forEach(async (email) => {
       if (emails.includes(email)) {
