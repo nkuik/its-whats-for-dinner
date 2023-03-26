@@ -21,8 +21,8 @@ export type Recipe = {
   cuisine?: string;
   diet?: string;
   estimatedTime?: number;
-  ingredients?: string;
-  instructions?: string;
+  ingredients?: string[];
+  instructions?: string[];
   timeOfYear?: Season | string;
   servings?: number;
   systemOfMeasurement?: string;
@@ -140,7 +140,7 @@ export async function parseRecipe(
   return recipeObject;
 }
 
-export async function formatList(list: ReadonlyArray<string>): Promise<string> {
+export function formatList(list: string[]): string {
   return `${list.length > 0 ? "- " : "None"}${list.join("\n- ")}`;
 }
 
@@ -152,7 +152,7 @@ export async function formatRecipePrompt(
 Type: ${recipeProps.type}
 
 It should avoid the following ingredients:
-${await formatList(recipeProps.avoidProteins)}
+${formatList(recipeProps.avoidProteins)}
 
 Most ingredients should be available during: ${recipeProps.timeOfYear} in ${
     recipeProps.countryOfOrigin
@@ -171,16 +171,16 @@ Provide possible substitutes these ingredients if the recipe includes them: ${re
   )} 
 
 Choose one of these cuisines:
-${await formatList(recipeProps.possibleCuisines)}
+${formatList(recipeProps.possibleCuisines)}
 
 Previous recipe titles included the following list. Avoid recipes similar to these:
-${await formatList(recipeProps.avoidRecipes)}
+${formatList(recipeProps.avoidRecipes)}
 
 There might be ingredients remaining from these ingredients, so prefer recipes with similar ingredients as these recipes:
-${await formatList(recipeProps.possibleLeftoverRecipes)}
+${formatList(recipeProps.possibleLeftoverRecipes)}
 
 Avoid these ingredients if possible:
-${await formatList(recipeProps.avoidIngredients)}
+${formatList(recipeProps.avoidIngredients)}
 
 Your response should adhere to this JSON schema: ${JSON.stringify(recipeSchema)}
 

@@ -1,16 +1,16 @@
 import { formatList, parseRecipe } from "./recipes";
 
 describe("formatList", () => {
-  it("returns 'None' when empty list provided as argument", async () => {
-    expect(await formatList([])).toEqual("None");
+  it("returns 'None' when empty list provided as argument", () => {
+    expect(formatList([])).toEqual("None");
   });
 
-  it("returns a single bullet point when provided one item", async () => {
-    expect(await formatList(["blah"])).toEqual("- blah");
+  it("returns a single bullet point when provided one item", () => {
+    expect(formatList(["blah"])).toEqual("- blah");
   });
 
-  it("returns a multiple bullet points when provided multiple items", async () => {
-    expect(await formatList(["this", "that"])).toEqual("- this\n- that");
+  it("returns a multiple bullet points when provided multiple items", () => {
+    expect(formatList(["this", "that"])).toEqual("- this\n- that");
   });
 });
 
