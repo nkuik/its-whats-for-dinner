@@ -7,6 +7,51 @@ import {
 } from "@aws-sdk/client-sns";
 import { Context } from "aws-lambda";
 import { Menu } from "../../menu";
+import { RecipeAndChatMessage, formatList } from "../../recipes/recipes";
+
+const listRecipes = (recipes: RecipeAndChatMessage[]): string => {
+  if (recipes.length === 0) {
+    return "No recipes of this type were found/requested.";
+  }
+  return recipes
+    .map((recipe, i) => {
+      return `${i + 1}. ${recipe.recipe.title}
+
+      Diet: ${recipe.recipe.diet}
+      Cuisine: ${recipe.recipe.cuisine}
+      Estimated time: ${recipe.recipe.estimatedTime} minutes
+
+      Ingredients:\n${
+        recipe.recipe.ingredients
+          ? formatList(recipe.recipe.ingredients)
+          : "None"
+      }
+
+      Ingredients:\n${
+        recipe.recipe.instructions
+          ? formatList(recipe.recipe.instructions)
+          : "None"
+      }
+      `;
+    })
+    .join("\n");
+};
+
+const formatMenu = (menu: Menu): string => {
+  return `
+  Mains:
+
+  ${listRecipes(menu.mains)}
+
+  Salads:
+
+  ${listRecipes(menu.salads)}
+
+  Desserts:
+
+  ${listRecipes(menu.desserts)}
+  `;
+};
 
 export const lambdaHandler = async (
   menu: Menu,
@@ -59,7 +104,7 @@ export const lambdaHandler = async (
 
     await snsClient.send(
       new PublishCommand({
-        Message: JSON.stringify(menu),
+        Message: formatMenu(menu),
         TopicArn: process.env.SNS_TOPIC_ARN,
       }),
     );
