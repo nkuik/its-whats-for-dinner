@@ -10,7 +10,7 @@ import {
   attemptRecipeRetrieval,
 } from "../../recipes/recipes";
 
-const systemMessage = `You are a chef living in Denmark. You recommend creative recipes with concise directions.`;
+const systemMessage = `You are a modern-day chef living in Denmark. You recommend timeless, creative recipes with concise directions.`;
 
 const returnRecipeTitle = (recipe: RecipeAndChatMessage): string => {
   if (!recipe.recipe.title) {
@@ -50,16 +50,23 @@ export const lambdaHandler = async (
   }
 
   const cuisines = [
+    "Asian",
     "Italian",
-    "Mexican",
     "Japanese",
+    "Mediterranean",
+    "Mexican",
     "Middle Eastern",
     "New Nordic",
     "Korean",
-    "Mediterranean",
     "Fusion",
   ];
-  const diets: Diet[] = ["omnivore", "pescatarian", "vegetarian", "vegan"];
+  const diets: Diet[] = [
+    "omnivore",
+    "pescatarian",
+    "vegetarian",
+    "vegan",
+    "preferably vegetarian",
+  ];
   const requiredRecipeProps: (keyof Recipe)[] = [
     "title",
     "type",
@@ -69,9 +76,11 @@ export const lambdaHandler = async (
   ];
 
   const lambdaClient = new LambdaClient({ region: process.env.AWS_REGION });
-  const possibleLeftoverRecipes = recipeRequest.avoidRecipes.map((recipe) =>
-    returnRecipeTitle(recipe),
-  );
+  const possibleLeftoverRecipes = [
+    ...new Set(
+      recipeRequest.avoidRecipes.map((recipe) => returnRecipeTitle(recipe)),
+    ),
+  ];
   const avoidRecipes = possibleLeftoverRecipes;
 
   const thisMonth = new Date().toLocaleString("default", { month: "long" });
@@ -87,49 +96,13 @@ export const lambdaHandler = async (
       countryOfOrigin: "Denmark",
       timeOfYear: thisMonth,
       avoidIngredients: ["beet"],
-      avoidProteins: ["beef"],
-      avoidRecipes,
-      possibleLeftoverRecipes,
+      avoidProteins: [],
+      avoidRecipes: [...new Set(avoidRecipes)],
+      possibleLeftoverRecipes: [],
       systemOfMeasurement: "metric",
       substituteIngredients: [],
-      servings: 2,
+      servings: recipeRequest.servings,
       type: "main course",
-      diet: diets[Math.floor(Math.random() * diets.length)],
-      possibleCuisines: await buildRandomCuisines(cuisines, 3),
-    };
-
-    const retrievalOptions: RecipeRetrievalOptions = {
-      systemMessage,
-      recipeProps,
-      apiOptions: {},
-      sendMessageOptions: {},
-      necessaryProps: requiredRecipeProps,
-      lambdaClient,
-      chatFunctionName: process.env.CHAT_LAMBDA_NAME,
-    };
-
-    const recipe = await attemptRecipeRetrieval(retrievalOptions);
-
-    if (!recipe || !recipe.recipe.title) {
-      throw new Error("No recipe found after making multiple attempts");
-    }
-    avoidRecipes.push(recipe.recipe.title);
-    thisWeeksMenu.mains.push(recipe);
-  }
-
-  for (let i = 1; i <= recipeRequest.numberOfSalads; i++) {
-    const recipeProps: RecipeProps = {
-      estimatedTime: 45,
-      countryOfOrigin: "Denmark",
-      timeOfYear: thisMonth,
-      avoidIngredients: ["beet"],
-      avoidProteins: ["beef"],
-      avoidRecipes,
-      possibleLeftoverRecipes,
-      systemOfMeasurement: "metric",
-      substituteIngredients: [],
-      servings: 2,
-      type: "salad",
       diet: diets[Math.floor(Math.random() * diets.length)],
       possibleCuisines: await buildRandomCuisines(cuisines, 2),
     };
@@ -147,10 +120,85 @@ export const lambdaHandler = async (
     const recipe = await attemptRecipeRetrieval(retrievalOptions);
 
     if (!recipe || !recipe.recipe.title) {
-      throw new Error("No recipe found after making multiple attempts");
+      console.warn("Recipe or recipe title was missing");
+      continue;
+    }
+    avoidRecipes.push(recipe.recipe.title);
+    thisWeeksMenu.mains.push(recipe);
+  }
+
+  for (let i = 1; i <= recipeRequest.numberOfSalads; i++) {
+    const recipeProps: RecipeProps = {
+      estimatedTime: 45,
+      countryOfOrigin: "Denmark",
+      timeOfYear: thisMonth,
+      avoidIngredients: ["beet"],
+      avoidProteins: ["beef"],
+      avoidRecipes: [...new Set(avoidRecipes)],
+      possibleLeftoverRecipes: [],
+      systemOfMeasurement: "metric",
+      substituteIngredients: [],
+      servings: recipeRequest.servings,
+      type: "salad",
+      diet: diets[Math.floor(Math.random() * diets.length)],
+      possibleCuisines: await buildRandomCuisines(cuisines, 3),
+    };
+
+    const retrievalOptions: RecipeRetrievalOptions = {
+      systemMessage,
+      recipeProps,
+      apiOptions: {},
+      sendMessageOptions: {},
+      necessaryProps: requiredRecipeProps,
+      lambdaClient,
+      chatFunctionName: process.env.CHAT_LAMBDA_NAME,
+    };
+
+    const recipe = await attemptRecipeRetrieval(retrievalOptions);
+
+    if (!recipe || !recipe.recipe.title) {
+      console.warn("Recipe or recipe title was missing");
+      continue;
     }
     avoidRecipes.push(recipe.recipe.title);
     thisWeeksMenu.salads.push(recipe);
+  }
+
+  for (let i = 1; i <= recipeRequest.numberOfDesserts; i++) {
+    const recipeProps: RecipeProps = {
+      estimatedTime: 45,
+      countryOfOrigin: "Denmark",
+      timeOfYear: thisMonth,
+      avoidIngredients: [],
+      avoidProteins: [],
+      avoidRecipes: [...new Set(avoidRecipes)],
+      possibleLeftoverRecipes: [],
+      systemOfMeasurement: "metric",
+      substituteIngredients: [],
+      servings: recipeRequest.servings,
+      type: "dessert",
+      diet: diets[Math.floor(Math.random() * diets.length)],
+      possibleCuisines: await buildRandomCuisines(cuisines, 3),
+    };
+
+    const retrievalOptions: RecipeRetrievalOptions = {
+      systemMessage,
+      recipeProps,
+      apiOptions: {},
+      sendMessageOptions: {},
+      necessaryProps: requiredRecipeProps,
+      lambdaClient,
+      chatFunctionName: process.env.CHAT_LAMBDA_NAME,
+    };
+
+    const recipe = await attemptRecipeRetrieval(retrievalOptions);
+
+    if (!recipe || !recipe.recipe.title) {
+      console.warn("Recipe or recipe title was missing");
+      continue;
+    }
+    avoidRecipes.push(recipe.recipe.title);
+    thisWeeksMenu.desserts.push(recipe);
   }
 
   return thisWeeksMenu;

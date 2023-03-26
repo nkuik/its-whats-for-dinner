@@ -12,8 +12,8 @@ export const lambdaHandler = async (
   event: EventBridgeEvent<"Scheduled Event", unknown>,
   context: Context,
 ): Promise<MenuRequest> => {
-  console.log(`event: ${event}`);
-  console.log(`context: ${context}`);
+  console.log(`event: ${JSON.stringify(event)}`);
+  console.log(`context: ${JSON.stringify(context)}`);
 
   if (!process.env.DYNAMODB_TABLE_NAME) {
     throw new Error("Env var DYNAMODB_TABLE_NAME must be set");
@@ -40,8 +40,8 @@ export const lambdaHandler = async (
 
   const menuRequest: MenuRequest = {
     servings: 2,
-    numberOfMains: 5,
-    numberOfSalads: 2,
+    numberOfMains: 7,
+    numberOfSalads: 4,
     numberOfDesserts: 0,
     avoidRecipes: [],
   };

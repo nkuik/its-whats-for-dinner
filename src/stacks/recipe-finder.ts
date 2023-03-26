@@ -1,9 +1,19 @@
-import { Duration, Fn, Stack, StackProps, aws_iam as iam } from "aws-cdk-lib";
+import {
+  Duration,
+  Fn,
+  Stack,
+  StackProps,
+  aws_events as events,
+  aws_iam as iam,
+} from "aws-cdk-lib";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as targets from "aws-cdk-lib/aws-events-targets";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import * as sns from "aws-cdk-lib/aws-sns";
+import { Chain, Parallel, StateMachine } from "aws-cdk-lib/aws-stepfunctions";
+import { LambdaInvoke } from "aws-cdk-lib/aws-stepfunctions-tasks";
 import { Construct } from "constructs";
 import * as path from "path";
 
@@ -150,7 +160,55 @@ export class RecipeFinderStack extends Stack {
       ),
     );
 
-    // TODO: Step Function state machine
-    // TODO: EB cron trigger
+    const retrieveHistoricRecipesInvocation = new LambdaInvoke(
+      this,
+      "Retrieve Historic Recipes",
+      {
+        lambdaFunction: retrieveHistoricRecipes,
+        outputPath: "$.Payload",
+      },
+    );
+
+    const findRecipesInvocation = new LambdaInvoke(this, "Find Recipes", {
+      lambdaFunction: findRecipes,
+      outputPath: "$.Payload",
+    });
+
+    const emailRecipesInvocation = new LambdaInvoke(this, "Email Recipes", {
+      lambdaFunction: emailRecipes,
+    });
+
+    const persistRecipesInvocation = new LambdaInvoke(this, "Persist Recipes", {
+      lambdaFunction: persistRecipes,
+    });
+
+    const handleRecipesParallel = new Parallel(this, "Handle Recipes")
+      .branch(emailRecipesInvocation)
+      .branch(persistRecipesInvocation);
+
+    const retrievalChain = Chain.start(retrieveHistoricRecipesInvocation)
+      .next(findRecipesInvocation)
+      .next(handleRecipesParallel);
+
+    const recipeFinderSM = new StateMachine(this, "Recipes a la ChatGPT", {
+      definition: retrievalChain,
+      timeout: Duration.minutes(15),
+    });
+
+    const fridayTrigger = new events.Rule(this, "everyWeekOnFriday", {
+      schedule: events.Schedule.cron({
+        minute: "0",
+        hour: "16",
+        month: "*",
+        weekDay: "FRI",
+      }),
+      eventPattern: {
+        // TODO: Pass in the menu request as the event
+        source: ["my.app"],
+        detailType: ["my.event"],
+      },
+    });
+
+    fridayTrigger.addTarget(new targets.SfnStateMachine(recipeFinderSM));
   }
 }
