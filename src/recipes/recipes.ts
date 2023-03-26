@@ -28,6 +28,7 @@ export type Recipe = {
   systemOfMeasurement?: string;
   title?: string;
   type?: string;
+  substitutes?: string[];
 };
 
 export type RecipeProps = Pick<
@@ -40,12 +41,12 @@ export type RecipeProps = Pick<
   | "systemOfMeasurement"
 > & {
   diet: Diet;
-  possibleCuisines: Array<string>;
-  avoidRecipes: Array<string>;
-  possibleLeftoverRecipes: Array<string>;
-  substituteIngredients: Array<string>;
-  avoidProteins: Array<Protein>;
-  avoidIngredients: Array<SeasonalIngredient>;
+  possibleCuisines: string[];
+  avoidRecipes: string[];
+  possibleLeftoverRecipes: string[];
+  substituteIngredients: string[];
+  avoidProteins: Protein[];
+  avoidIngredients: SeasonalIngredient[];
 };
 
 export type RecipeAndChatMessage = {
@@ -58,7 +59,7 @@ export type RecipeRetrievalOptions = {
   recipeProps: RecipeProps;
   apiOptions: MyChatGPTAPIOptions;
   sendMessageOptions: ShadowSendMessageOptions;
-  necessaryProps: Array<keyof Recipe>;
+  necessaryProps: (keyof Recipe)[];
   lambdaClient: LambdaClient;
   chatFunctionName: string;
   attemptLimit?: number;
@@ -104,18 +105,21 @@ export async function attemptRecipeRetrieval(
       throw new Error("No payload received from chat lambda");
     }
 
-    const result = JSON.parse(
-      Buffer.from(Payload).toString(),
-    ) as ShadowChatMessage;
-
+    let parsedRecipe: RecipeAndChatMessage;
     try {
-      return {
+      const result = JSON.parse(
+        Buffer.from(Payload).toString(),
+      ) as ShadowChatMessage;
+      parsedRecipe = {
         recipe: await parseRecipe(result.text, retrievalOptions.necessaryProps),
         chatMessage: result,
       };
     } catch (e) {
       console.log("Failed parsing recipe, attempting again...");
+      continue;
     }
+    console.log("Successfully parsed recipe");
+    return parsedRecipe;
   }
 
   return undefined;
@@ -151,35 +155,35 @@ export async function formatRecipePrompt(
 
 Type: ${recipeProps.type}
 
-It should avoid the following ingredients:
-${formatList(recipeProps.avoidProteins)}
-
-Most ingredients should be available during: ${recipeProps.timeOfYear} in ${
-    recipeProps.countryOfOrigin
-  } 
-
 Diet: ${recipeProps.diet}
 
 System of measurement: ${recipeProps.systemOfMeasurement}
 
 Servings: ${recipeProps.servings}
 
-Time required: at most ${recipeProps.estimatedTime}, but can be less
+It should be ONE of these cuisines:
+${formatList(recipeProps.possibleCuisines)}
 
-Provide possible substitutes these ingredients if the recipe includes them: ${recipeProps.substituteIngredients.join(
+Time required: at most ${recipeProps.estimatedTime} minutes, but can be less
+
+The majority ingredients should be available during: ${
+    recipeProps.timeOfYear
+  } in ${recipeProps.countryOfOrigin} 
+
+It should avoid the following ingredients:
+${formatList(recipeProps.avoidProteins)}
+
+Provide possible substitutes for these ingredients if the recipe includes them: ${recipeProps.substituteIngredients.join(
     ", ",
   )} 
 
-Choose one of these cuisines:
-${formatList(recipeProps.possibleCuisines)}
-
-Previous recipe titles included the following list. Avoid recipes similar to these:
+Avoid recipes similar to these:
 ${formatList(recipeProps.avoidRecipes)}
 
 There might be ingredients remaining from these ingredients, so prefer recipes with similar ingredients as these recipes:
 ${formatList(recipeProps.possibleLeftoverRecipes)}
 
-Avoid these ingredients if possible:
+Avoid these ingredients, if possible:
 ${formatList(recipeProps.avoidIngredients)}
 
 Your response should adhere to this JSON schema: ${JSON.stringify(recipeSchema)}

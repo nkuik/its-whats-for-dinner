@@ -4,6 +4,8 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import * as sns from "aws-cdk-lib/aws-sns";
+import { Chain, Parallel, StateMachine } from "aws-cdk-lib/aws-stepfunctions";
+import { LambdaInvoke } from "aws-cdk-lib/aws-stepfunctions-tasks";
 import { Construct } from "constructs";
 import * as path from "path";
 
@@ -150,7 +152,40 @@ export class RecipeFinderStack extends Stack {
       ),
     );
 
-    // TODO: Step Function state machine
-    // TODO: EB cron trigger
+    // TODO: EB cron trigger specifying requested menu
+
+    const retrieveHistoricRecipesInvocation = new LambdaInvoke(
+      this,
+      "Retrieve Historic Recipes",
+      {
+        lambdaFunction: retrieveHistoricRecipes,
+        outputPath: "$.Payload",
+      },
+    );
+
+    const findRecipesInvocation = new LambdaInvoke(this, "Find Recipes", {
+      lambdaFunction: findRecipes,
+      outputPath: "$.Payload",
+    });
+
+    const emailRecipesInvocation = new LambdaInvoke(this, "Email Recipes", {
+      lambdaFunction: emailRecipes,
+    });
+
+    const persistRecipesInvocation = new LambdaInvoke(this, "Persist Recipes", {
+      lambdaFunction: persistRecipes,
+    });
+
+    const handleRecipesParallel = new Parallel(this, "Handle Recipes")
+      .branch(emailRecipesInvocation)
+      .branch(persistRecipesInvocation);
+
+    const retrievalChain = Chain.start(retrieveHistoricRecipesInvocation)
+      .next(findRecipesInvocation)
+      .next(handleRecipesParallel);
+
+    new StateMachine(this, "Recipes a la ChatGPT", {
+      definition: retrievalChain,
+    });
   }
 }

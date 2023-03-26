@@ -27,9 +27,15 @@ const listRecipes = (recipes: RecipeAndChatMessage[]): string => {
           : "None"
       }
 
-      Ingredients:\n${
+      Instructions:\n${
         recipe.recipe.instructions
           ? formatList(recipe.recipe.instructions)
+          : "None"
+      }
+
+      Substitutes:\n${
+        recipe.recipe.substitutes
+          ? formatList(recipe.recipe.substitutes)
           : "None"
       }
       `;
