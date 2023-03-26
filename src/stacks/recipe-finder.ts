@@ -1,5 +1,13 @@
-import { Duration, Fn, Stack, StackProps, aws_iam as iam } from "aws-cdk-lib";
+import {
+  Duration,
+  Fn,
+  Stack,
+  StackProps,
+  aws_events as events,
+  aws_iam as iam,
+} from "aws-cdk-lib";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as targets from "aws-cdk-lib/aws-events-targets";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
@@ -152,8 +160,6 @@ export class RecipeFinderStack extends Stack {
       ),
     );
 
-    // TODO: EB cron trigger specifying requested menu
-
     const retrieveHistoricRecipesInvocation = new LambdaInvoke(
       this,
       "Retrieve Historic Recipes",
@@ -184,8 +190,25 @@ export class RecipeFinderStack extends Stack {
       .next(findRecipesInvocation)
       .next(handleRecipesParallel);
 
-    new StateMachine(this, "Recipes a la ChatGPT", {
+    const recipeFinderSM = new StateMachine(this, "Recipes a la ChatGPT", {
       definition: retrievalChain,
+      timeout: Duration.minutes(15),
     });
+
+    const fridayTrigger = new events.Rule(this, "everyWeekOnFriday", {
+      schedule: events.Schedule.cron({
+        minute: "0",
+        hour: "16",
+        month: "*",
+        weekDay: "FRI",
+      }),
+      eventPattern: {
+        // TODO: Pass in the menu request as the event
+        source: ["my.app"],
+        detailType: ["my.event"],
+      },
+    });
+
+    fridayTrigger.addTarget(new targets.SfnStateMachine(recipeFinderSM));
   }
 }

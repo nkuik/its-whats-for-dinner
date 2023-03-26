@@ -16,6 +16,7 @@ export type Diet =
   | "vegan"
   | "vegetarian";
 
+// TODO: Add difficulty
 export type Recipe = {
   countryOfOrigin?: string;
   cuisine?: string;
@@ -114,8 +115,8 @@ export async function attemptRecipeRetrieval(
         recipe: await parseRecipe(result.text, retrievalOptions.necessaryProps),
         chatMessage: result,
       };
-    } catch (e) {
-      console.log("Failed parsing recipe, attempting again...");
+    } catch (err) {
+      console.log(`Failed parsing recipe: ${err}; attempting again...`);
       continue;
     }
     console.log("Successfully parsed recipe");
@@ -136,11 +137,12 @@ export async function parseRecipe(
     console.log(e);
     throw new Error(`Error parsing recipe JSON`);
   }
-  necessaryProps.map((props) => {
-    if (!(props in recipeObject)) {
-      throw new Error(`Recipe missing necessary item: ${props}`);
+  necessaryProps.map((prop) => {
+    if (!(prop in recipeObject)) {
+      throw new Error(`Recipe missing necessary item: ${prop}`);
     }
   });
+
   return recipeObject;
 }
 
