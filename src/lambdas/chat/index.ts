@@ -12,6 +12,8 @@ import {
 export const lambdaHandler = async (
   chatProps: ChatProps,
 ): Promise<ShadowChatMessage> => {
+  console.log("chatProps are: ", JSON.stringify(chatProps, null, 2));
+
   if (!process.env.OPENAI_SECRET_NAME) {
     throw new Error("OpenAI secret name not set!");
   }

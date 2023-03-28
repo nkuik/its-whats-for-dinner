@@ -94,7 +94,7 @@ export const lambdaHandler = async (
 
     process.env.EMAIL_ADDRESSES.split(",").forEach(async (email) => {
       if (emails.includes(email)) {
-        console.log("Email included, skipping");
+        console.log("Email included, skipping subscription command");
         return;
       }
       // TODO: break out subscribe to a different lambda

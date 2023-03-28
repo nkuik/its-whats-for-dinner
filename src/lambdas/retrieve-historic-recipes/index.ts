@@ -40,8 +40,8 @@ export const lambdaHandler = async (
 
   const menuRequest: MenuRequest = {
     servings: 2,
-    numberOfMains: 7,
-    numberOfSalads: 4,
+    numberOfMains: 6,
+    numberOfSalads: 3,
     numberOfDesserts: 0,
     avoidRecipes: [],
   };
