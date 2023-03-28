@@ -115,6 +115,9 @@ export async function attemptRecipeRetrieval(
         recipe: await parseRecipe(result.text, retrievalOptions.necessaryProps),
         chatMessage: result,
       };
+      if (!parsedRecipe.recipe || !parsedRecipe.recipe.title) {
+        throw new Error("Missing recipe or recipe title");
+      }
     } catch (err) {
       console.log(`Failed parsing recipe: ${err}; attempting again...`);
       continue;

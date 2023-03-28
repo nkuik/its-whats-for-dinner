@@ -1,5 +1,6 @@
 import { LambdaClient } from "@aws-sdk/client-lambda";
 import { Context } from "aws-lambda";
+import { MyChatGPTAPIOptions } from "../../chat";
 import { Menu, MenuRequest } from "../../menu";
 import {
   Diet,
@@ -10,7 +11,8 @@ import {
   attemptRecipeRetrieval,
 } from "../../recipes/recipes";
 
-const systemMessage = `You are a modern-day chef living in Denmark. You recommend timeless, creative recipes with concise directions.`;
+const systemMessage = `You are a modern-day chef. You recommend creative recipes with concise directions.`;
+const model = "gpt-4";
 
 const returnRecipeTitle = (recipe: RecipeAndChatMessage): string => {
   if (!recipe.recipe.title) {
@@ -42,8 +44,10 @@ export const lambdaHandler = async (
   recipeRequest: MenuRequest,
   context: Context,
 ): Promise<Menu> => {
-  console.log("recipes: ", recipeRequest);
-  console.log("context: ", context);
+  console.log("recipes:", recipeRequest);
+  console.log("context:", context);
+  console.log("systemMessage:", systemMessage);
+  console.log("ChatGPT model:", model);
 
   if (!process.env.CHAT_LAMBDA_NAME) {
     throw new Error("Env var CHAT_LAMBDA_NAME must be set!");
@@ -74,6 +78,12 @@ export const lambdaHandler = async (
     "ingredients",
     "instructions",
   ];
+  const apiOptions: MyChatGPTAPIOptions = {
+    completionParams: {
+      model,
+    },
+    maxModelTokens: 8100,
+  };
 
   const lambdaClient = new LambdaClient({ region: process.env.AWS_REGION });
   const possibleLeftoverRecipes = [
@@ -110,7 +120,7 @@ export const lambdaHandler = async (
     const retrievalOptions: RecipeRetrievalOptions = {
       systemMessage,
       recipeProps,
-      apiOptions: {},
+      apiOptions,
       sendMessageOptions: {},
       necessaryProps: requiredRecipeProps,
       lambdaClient,
@@ -147,7 +157,7 @@ export const lambdaHandler = async (
     const retrievalOptions: RecipeRetrievalOptions = {
       systemMessage,
       recipeProps,
-      apiOptions: {},
+      apiOptions,
       sendMessageOptions: {},
       necessaryProps: requiredRecipeProps,
       lambdaClient,
@@ -184,7 +194,7 @@ export const lambdaHandler = async (
     const retrievalOptions: RecipeRetrievalOptions = {
       systemMessage,
       recipeProps,
-      apiOptions: {},
+      apiOptions,
       sendMessageOptions: {},
       necessaryProps: requiredRecipeProps,
       lambdaClient,

@@ -60,7 +60,7 @@ export class ChatStack extends Stack {
       ],
     });
 
-    const chatLambda = new NodejsFunction(this, "chatLambda", {
+    const chatLambda = new NodejsFunction(this, "ChatLambda", {
       ...lambdaProps,
       entry: path.join(__dirname, `/../lambdas/chat/index.ts`),
       environment: {

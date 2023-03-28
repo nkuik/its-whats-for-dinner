@@ -8,8 +8,10 @@ import { RecipeFinderStack } from "../src/stacks/recipe-finder";
 
 const app = new cdk.App();
 
-new ChatStack(app, "ChatLambda", {
+const chatStack = new ChatStack(app, "ChatLambda", {
   openaiSecretName: "openai-api-key",
 });
 
-new RecipeFinderStack(app, "RecipeFinder", {});
+const recipeFinderStack = new RecipeFinderStack(app, "RecipeFinder", {});
+
+recipeFinderStack.addDependency(chatStack);

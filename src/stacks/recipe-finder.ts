@@ -25,7 +25,7 @@ export class RecipeFinderStack extends Stack {
       runtime: lambda.Runtime.NODEJS_18_X,
       architecture: lambda.Architecture.ARM_64,
       handler: "lambdaHandler",
-      timeout: Duration.seconds(300),
+      timeout: Duration.seconds(30),
       memorySize: 256,
       bundling: {
         minify: true,
@@ -89,7 +89,7 @@ export class RecipeFinderStack extends Stack {
       environment: {
         CHAT_LAMBDA_NAME: chatLambdaName,
       },
-      timeout: Duration.minutes(5),
+      timeout: Duration.minutes(10),
     });
 
     findRecipes.role?.attachInlinePolicy(
