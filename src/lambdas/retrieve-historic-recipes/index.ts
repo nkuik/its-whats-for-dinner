@@ -1,12 +1,13 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, GetCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  GetCommandOutput,
+} from "@aws-sdk/lib-dynamodb";
 import { Context, EventBridgeEvent } from "aws-lambda";
 import { MenuRequest } from "../../menu";
-import {
-  GetRecipeRecordCommand,
-  RecipeAndChatMessage,
-} from "../../recipes/recipes";
-import { getPreviousYearWeek } from "../../utils";
+import { RecipeAndChatMessage } from "../../recipes/recipes";
+import { buildYearWeek, getPreviousYearWeek } from "../../utils";
 
 export const lambdaHandler = async (
   event: EventBridgeEvent<"Scheduled Event", unknown>,
@@ -18,25 +19,9 @@ export const lambdaHandler = async (
   if (!process.env.DYNAMODB_TABLE_NAME) {
     throw new Error("Env var DYNAMODB_TABLE_NAME must be set");
   }
-  const yearWeek = await getPreviousYearWeek(new Date());
-
-  console.log(`Searching for recipes with yearWeek: ${yearWeek}`);
 
   const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
   const ddbDocClient = DynamoDBDocumentClient.from(dynamoClient);
-
-  const getRecipeRecord: GetRecipeRecordCommand = {
-    Key: {
-      yearWeek: yearWeek,
-    },
-  };
-
-  const maybeRecipes = await ddbDocClient.send(
-    new GetCommand({
-      TableName: process.env.DYNAMODB_TABLE_NAME,
-      ...getRecipeRecord,
-    }),
-  );
 
   const menuRequest: MenuRequest = {
     servings: 2,
@@ -46,10 +31,30 @@ export const lambdaHandler = async (
     avoidRecipes: [],
   };
 
-  console.log(JSON.stringify(maybeRecipes));
-  if (maybeRecipes.Item && maybeRecipes.Item.recipes) {
-    menuRequest.avoidRecipes = maybeRecipes.Item
-      .recipes as RecipeAndChatMessage[];
+  const commandOutputs: Promise<GetCommandOutput>[] = [
+    await getPreviousYearWeek(new Date()),
+    await buildYearWeek(new Date()),
+  ].map(async (yearWeek) => {
+    return await ddbDocClient.send(
+      new GetCommand({
+        TableName: process.env.DYNAMODB_TABLE_NAME,
+        Key: {
+          yearWeek: yearWeek,
+        },
+      }),
+    );
+  });
+
+  const recipes = await Promise.all(commandOutputs).then((outputs) => {
+    return outputs.flatMap((output) => (output.Item ? [output.Item] : []));
+  });
+
+  console.log("recipes: ", recipes);
+
+  if (recipes) {
+    menuRequest.avoidRecipes = recipes.flatMap((recipe) =>
+      (recipe.recipes ? [recipe.recipes as RecipeAndChatMessage[]] : []).flat(),
+    );
   }
 
   return menuRequest;
