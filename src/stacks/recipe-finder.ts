@@ -89,7 +89,7 @@ export class RecipeFinderStack extends Stack {
       environment: {
         CHAT_LAMBDA_NAME: chatLambdaName,
       },
-      timeout: Duration.minutes(10),
+      timeout: Duration.minutes(14),
     });
 
     findRecipes.role?.attachInlinePolicy(
