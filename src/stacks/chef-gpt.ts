@@ -17,7 +17,7 @@ import { LambdaInvoke } from "aws-cdk-lib/aws-stepfunctions-tasks";
 import { Construct } from "constructs";
 import * as path from "path";
 
-export class RecipeFinderStack extends Stack {
+export class ChefGPT extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
@@ -190,7 +190,7 @@ export class RecipeFinderStack extends Stack {
       .next(findRecipesInvocation)
       .next(handleRecipesParallel);
 
-    const recipeFinderSM = new StateMachine(this, "Recipes a la ChatGPT", {
+    const recipeFinderSM = new StateMachine(this, "ChefGPT", {
       definition: retrievalChain,
       timeout: Duration.minutes(15),
     });

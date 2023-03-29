@@ -4,7 +4,7 @@
 import * as cdk from "aws-cdk-lib";
 import "source-map-support/register";
 import { ChatStack } from "../src/stacks/chat";
-import { RecipeFinderStack } from "../src/stacks/recipe-finder";
+import { ChefGPT } from "../src/stacks/chef-gpt";
 
 const app = new cdk.App();
 
@@ -12,6 +12,6 @@ const chatStack = new ChatStack(app, "ChatLambda", {
   openaiSecretName: "openai-api-key",
 });
 
-const recipeFinderStack = new RecipeFinderStack(app, "RecipeFinder", {});
+const chefGPT = new ChefGPT(app, "ChefGPT", {});
 
-recipeFinderStack.addDependency(chatStack);
+chefGPT.addDependency(chatStack);
