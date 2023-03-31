@@ -11,9 +11,6 @@ import {
   attemptRecipeRetrieval,
 } from "../../recipes/recipes";
 
-const systemMessage = `You are a modern-day chef. You recommend creative recipes with concise directions.`;
-const model = "gpt-4";
-
 const returnRecipeTitle = (recipe: RecipeAndChatMessage): string => {
   if (!recipe.recipe.title) {
     throw new Error("Recipe was missing a title");
@@ -41,13 +38,13 @@ export const buildRandomCuisines = async (
 };
 
 export const lambdaHandler = async (
-  recipeRequest: MenuRequest,
+  menuRequest: MenuRequest,
   context: Context,
 ): Promise<Menu> => {
-  console.log("recipes:", recipeRequest);
+  console.log("recipes:", menuRequest);
   console.log("context:", context);
-  console.log("systemMessage:", systemMessage);
-  console.log("ChatGPT model:", model);
+  console.log("systemMessage:", menuRequest.messageToChef);
+  console.log("ChatGPT model:", menuRequest.chefLevel);
 
   if (!process.env.CHAT_LAMBDA_NAME) {
     throw new Error("Env var CHAT_LAMBDA_NAME must be set!");
@@ -80,7 +77,7 @@ export const lambdaHandler = async (
   ];
   const apiOptions: MyChatGPTAPIOptions = {
     completionParams: {
-      model,
+      model: menuRequest.chefLevel,
     },
     maxModelTokens: 8100,
   };
@@ -88,7 +85,7 @@ export const lambdaHandler = async (
   const lambdaClient = new LambdaClient({ region: process.env.AWS_REGION });
   const possibleLeftoverRecipes = [
     ...new Set(
-      recipeRequest.avoidRecipes.map((recipe) => returnRecipeTitle(recipe)),
+      menuRequest.avoidRecipes.map((recipe) => returnRecipeTitle(recipe)),
     ),
   ];
   const avoidRecipes = possibleLeftoverRecipes;
@@ -100,7 +97,7 @@ export const lambdaHandler = async (
     desserts: [],
   };
 
-  for (let i = 1; i <= recipeRequest.numberOfMains; i++) {
+  for (let i = 1; i <= menuRequest.numberOfMains; i++) {
     const recipeProps: RecipeProps = {
       estimatedTime: 45,
       countryOfOrigin: "Denmark",
@@ -111,14 +108,14 @@ export const lambdaHandler = async (
       possibleLeftoverRecipes: [],
       systemOfMeasurement: "metric",
       substituteIngredients: [],
-      servings: recipeRequest.servings,
+      servings: menuRequest.servings,
       type: "main course",
       diet: diets[Math.floor(Math.random() * diets.length)],
       possibleCuisines: await buildRandomCuisines(cuisines, 2),
     };
 
     const retrievalOptions: RecipeRetrievalOptions = {
-      systemMessage,
+      systemMessage: menuRequest.messageToChef,
       recipeProps,
       apiOptions,
       sendMessageOptions: {},
@@ -137,25 +134,25 @@ export const lambdaHandler = async (
     thisWeeksMenu.mains.push(recipe);
   }
 
-  for (let i = 1; i <= recipeRequest.numberOfSalads; i++) {
+  for (let i = 1; i <= menuRequest.numberOfSalads; i++) {
     const recipeProps: RecipeProps = {
       estimatedTime: 45,
       countryOfOrigin: "Denmark",
       timeOfYear: thisMonth,
       avoidIngredients: ["beet"],
-      avoidProteins: ["beef"],
+      avoidProteins: [],
       avoidRecipes: [...new Set(avoidRecipes)],
       possibleLeftoverRecipes: [],
       systemOfMeasurement: "metric",
       substituteIngredients: [],
-      servings: recipeRequest.servings,
+      servings: menuRequest.servings,
       type: "salad",
       diet: diets[Math.floor(Math.random() * diets.length)],
       possibleCuisines: await buildRandomCuisines(cuisines, 3),
     };
 
     const retrievalOptions: RecipeRetrievalOptions = {
-      systemMessage,
+      systemMessage: menuRequest.messageToChef,
       recipeProps,
       apiOptions,
       sendMessageOptions: {},
@@ -174,7 +171,7 @@ export const lambdaHandler = async (
     thisWeeksMenu.salads.push(recipe);
   }
 
-  for (let i = 1; i <= recipeRequest.numberOfDesserts; i++) {
+  for (let i = 1; i <= menuRequest.numberOfDesserts; i++) {
     const recipeProps: RecipeProps = {
       estimatedTime: 45,
       countryOfOrigin: "Denmark",
@@ -185,14 +182,14 @@ export const lambdaHandler = async (
       possibleLeftoverRecipes: [],
       systemOfMeasurement: "metric",
       substituteIngredients: [],
-      servings: recipeRequest.servings,
+      servings: menuRequest.servings,
       type: "dessert",
       diet: diets[Math.floor(Math.random() * diets.length)],
       possibleCuisines: await buildRandomCuisines(cuisines, 3),
     };
 
     const retrievalOptions: RecipeRetrievalOptions = {
-      systemMessage,
+      systemMessage: menuRequest.messageToChef,
       recipeProps,
       apiOptions,
       sendMessageOptions: {},

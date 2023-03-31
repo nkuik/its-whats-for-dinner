@@ -6,6 +6,8 @@ export type MenuRequest = {
   numberOfSalads: number;
   numberOfDesserts: number;
   avoidRecipes: RecipeAndChatMessage[];
+  messageToChef: string;
+  chefLevel: "gpt-3.5-turbo-0301" | "gpt-4";
 };
 
 export type Menu = {

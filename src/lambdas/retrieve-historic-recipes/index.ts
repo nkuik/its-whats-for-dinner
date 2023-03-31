@@ -24,11 +24,13 @@ export const lambdaHandler = async (
   const ddbDocClient = DynamoDBDocumentClient.from(dynamoClient);
 
   const menuRequest: MenuRequest = {
-    servings: 2,
-    numberOfMains: 6,
+    servings: 4,
+    numberOfMains: 5,
     numberOfSalads: 3,
     numberOfDesserts: 0,
     avoidRecipes: [],
+    chefLevel: "gpt-4",
+    messageToChef: "You are a modern-day chef. You recommend creative recipes with concise directions.",
   };
 
   const commandOutputs: Promise<GetCommandOutput>[] = [
