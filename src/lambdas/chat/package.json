@@ -7,6 +7,6 @@
   "source": "./index.ts",
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "3.303.0",
-    "chatgpt": "5.1.3"
+    "chatgpt": "5.1.4"
   }
 }
