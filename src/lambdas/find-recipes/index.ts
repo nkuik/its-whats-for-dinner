@@ -52,14 +52,15 @@ export const lambdaHandler = async (
 
   const cuisines = [
     "Asian",
-    "Italian",
+    "Fusion",
+    "Indian",
     "Japanese",
+    "Korean",
+    "Italian",
     "Mediterranean",
     "Mexican",
     "Middle Eastern",
     "New Nordic",
-    "Korean",
-    "Fusion",
   ];
   const diets: Diet[] = [
     "omnivore",
