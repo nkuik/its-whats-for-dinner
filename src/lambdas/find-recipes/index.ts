@@ -112,7 +112,7 @@ export const lambdaHandler = async (
       servings: menuRequest.servings,
       type: "main course",
       diet: diets[Math.floor(Math.random() * diets.length)],
-      possibleCuisines: await buildRandomCuisines(cuisines, 2),
+      possibleCuisines: await buildRandomCuisines(cuisines, 1),
     };
 
     const retrievalOptions: RecipeRetrievalOptions = {
@@ -149,7 +149,7 @@ export const lambdaHandler = async (
       servings: menuRequest.servings,
       type: "salad",
       diet: diets[Math.floor(Math.random() * diets.length)],
-      possibleCuisines: await buildRandomCuisines(cuisines, 3),
+      possibleCuisines: await buildRandomCuisines(cuisines, 1),
     };
 
     const retrievalOptions: RecipeRetrievalOptions = {
