@@ -10,6 +10,7 @@ import {
   RecipeRetrievalOptions,
   attemptRecipeRetrieval,
 } from "../../recipes/recipes";
+import { findMonthInterval } from "../../seasons/seasons";
 
 const returnRecipeTitle = (recipe: RecipeAndChatMessage): string => {
   if (!recipe.recipe.title) {
@@ -41,7 +42,7 @@ export const lambdaHandler = async (
   menuRequest: MenuRequest,
   context: Context,
 ): Promise<Menu> => {
-  console.log("recipes:", menuRequest);
+  console.log("menuRequest:", menuRequest);
   console.log("context:", context);
   console.log("systemMessage:", menuRequest.messageToChef);
   console.log("ChatGPT model:", menuRequest.chefLevel);
@@ -91,7 +92,7 @@ export const lambdaHandler = async (
   ];
   const avoidRecipes = possibleLeftoverRecipes;
 
-  const thisMonth = new Date().toLocaleString("default", { month: "long" });
+  const timeOfYear = await findMonthInterval(new Date());
   const thisWeeksMenu: Menu = {
     mains: [],
     salads: [],
@@ -102,7 +103,7 @@ export const lambdaHandler = async (
     const recipeProps: RecipeProps = {
       estimatedTime: 45,
       countryOfOrigin: "Denmark",
-      timeOfYear: thisMonth,
+      timeOfYear,
       avoidIngredients: ["beet"],
       avoidProteins: [],
       avoidRecipes: [...new Set(avoidRecipes)],
@@ -139,7 +140,7 @@ export const lambdaHandler = async (
     const recipeProps: RecipeProps = {
       estimatedTime: 45,
       countryOfOrigin: "Denmark",
-      timeOfYear: thisMonth,
+      timeOfYear,
       avoidIngredients: ["beet"],
       avoidProteins: [],
       avoidRecipes: [...new Set(avoidRecipes)],
@@ -176,7 +177,7 @@ export const lambdaHandler = async (
     const recipeProps: RecipeProps = {
       estimatedTime: 45,
       countryOfOrigin: "Denmark",
-      timeOfYear: thisMonth,
+      timeOfYear,
       avoidIngredients: [],
       avoidProteins: [],
       avoidRecipes: [...new Set(avoidRecipes)],
