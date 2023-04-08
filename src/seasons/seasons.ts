@@ -14,3 +14,15 @@ export const findSeason = async (dateObj: Date): Promise<Season> => {
   }
   return "winter";
 };
+
+export const findMonthInterval = async (dateObj: Date): Promise<string> => {
+  const day: number = dateObj.getDate();
+  const month: string = dateObj.toLocaleString("default", { month: "long" });
+  if (day < 11) {
+    return `beginning of ${month}`;
+  } else if (day < 21) {
+    return `middle of ${month}`;
+  } else {
+    return `end of ${month}`;
+  }
+};
