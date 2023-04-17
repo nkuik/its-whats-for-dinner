@@ -40,7 +40,7 @@
     "deploy": "cdk deploy --all"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.312.0",
+    "@aws-sdk/client-dynamodb": "3.315.0",
     "@aws-sdk/client-lambda": "3.314.0",
     "@aws-sdk/client-secrets-manager": "3.312.0",
     "@aws-sdk/client-sns": "3.312.0",
