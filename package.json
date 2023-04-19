@@ -42,7 +42,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.316.0",
     "@aws-sdk/client-lambda": "3.316.0",
-    "@aws-sdk/client-secrets-manager": "3.315.0",
+    "@aws-sdk/client-secrets-manager": "3.316.0",
     "@aws-sdk/client-sns": "3.315.0",
     "@aws-sdk/lib-dynamodb": "3.315.0",
     "chatgpt": "5.2.2",
