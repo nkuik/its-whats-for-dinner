@@ -45,7 +45,7 @@
     "@aws-sdk/client-secrets-manager": "3.321.1",
     "@aws-sdk/client-sns": "3.321.1",
     "@aws-sdk/lib-dynamodb": "3.321.1",
-    "chatgpt": "5.2.2",
+    "chatgpt": "5.2.4",
     "source-map-support": "0.5.21"
   }
 }
