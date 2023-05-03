@@ -6,6 +6,6 @@
     },
     "source": "./index.ts",
     "dependencies": {
-        "@aws-sdk/client-sns": "3.325.0"
+        "@aws-sdk/client-sns": "3.326.0"
     }
 }
