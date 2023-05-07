@@ -51,9 +51,14 @@ export const lambdaHandler = async (
     throw new Error("Env var CHAT_LAMBDA_NAME must be set!");
   }
 
+  // TODO: Define these in a separate file
   const cuisines = [
+    "African",
     "Asian",
+    "Cajun",
+    "Caribbean",
     "Fusion",
+    "Hawaiian",
     "Indian",
     "Japanese",
     "Korean",
@@ -62,14 +67,12 @@ export const lambdaHandler = async (
     "Mexican",
     "Middle Eastern",
     "New Nordic",
+    "Thai",
+    "Vietnamese",
   ];
-  const diets: Diet[] = [
-    "omnivore",
-    "pescatarian",
-    "vegetarian",
-    "vegan",
-    "preferably vegetarian",
-  ];
+
+  const diets: Diet[] = ["omnivore", "pescatarian", "vegetarian", "vegan"];
+
   const requiredRecipeProps: (keyof Recipe)[] = [
     "title",
     "type",
@@ -77,6 +80,7 @@ export const lambdaHandler = async (
     "ingredients",
     "instructions",
   ];
+
   const apiOptions: MyChatGPTAPIOptions = {
     completionParams: {
       model: menuRequest.chefLevel,
@@ -101,7 +105,7 @@ export const lambdaHandler = async (
 
   for (let i = 1; i <= menuRequest.numberOfMains; i++) {
     const recipeProps: RecipeProps = {
-      estimatedTime: 45,
+      estimatedTime: 35,
       countryOfOrigin: "Denmark",
       timeOfYear,
       avoidIngredients: ["beet"],

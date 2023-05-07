@@ -24,7 +24,7 @@ export const lambdaHandler = async (
   const ddbDocClient = DynamoDBDocumentClient.from(dynamoClient);
 
   const menuRequest: MenuRequest = {
-    servings: 4,
+    servings: 2,
     numberOfMains: 5,
     numberOfSalads: 3,
     numberOfDesserts: 0,
