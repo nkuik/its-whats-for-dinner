@@ -105,7 +105,7 @@ export const lambdaHandler = async (
 
   for (let i = 1; i <= menuRequest.numberOfMains; i++) {
     const recipeProps: RecipeProps = {
-      estimatedTime: 35,
+      estimatedTime: 45,
       countryOfOrigin: "Denmark",
       timeOfYear,
       avoidIngredients: ["beet"],
@@ -142,7 +142,7 @@ export const lambdaHandler = async (
 
   for (let i = 1; i <= menuRequest.numberOfSalads; i++) {
     const recipeProps: RecipeProps = {
-      estimatedTime: 45,
+      estimatedTime: 30,
       countryOfOrigin: "Denmark",
       timeOfYear,
       avoidIngredients: ["beet"],
@@ -179,7 +179,7 @@ export const lambdaHandler = async (
 
   for (let i = 1; i <= menuRequest.numberOfDesserts; i++) {
     const recipeProps: RecipeProps = {
-      estimatedTime: 45,
+      estimatedTime: 30,
       countryOfOrigin: "Denmark",
       timeOfYear,
       avoidIngredients: [],

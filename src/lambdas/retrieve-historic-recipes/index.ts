@@ -25,12 +25,13 @@ export const lambdaHandler = async (
 
   const menuRequest: MenuRequest = {
     servings: 2,
-    numberOfMains: 5,
-    numberOfSalads: 3,
+    numberOfMains: 4,
+    numberOfSalads: 2,
     numberOfDesserts: 0,
     avoidRecipes: [],
     chefLevel: "gpt-4",
-    messageToChef: "You are a modern-day chef. You recommend creative recipes with concise directions.",
+    messageToChef:
+      "You are a modern-day chef. You recommend creative recipes with concise directions.",
   };
 
   const commandOutputs: Promise<GetCommandOutput>[] = [
