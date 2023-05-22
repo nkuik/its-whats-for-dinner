@@ -6,7 +6,7 @@
   },
   "source": "./index.ts",
   "dependencies": {
-    "@aws-sdk/client-secrets-manager": "3.335.0",
+    "@aws-sdk/client-secrets-manager": "3.337.0",
     "chatgpt": "5.2.4"
   }
 }
