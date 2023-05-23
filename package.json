@@ -43,7 +43,7 @@
     "@aws-sdk/client-dynamodb": "3.337.0",
     "@aws-sdk/client-lambda": "3.338.0",
     "@aws-sdk/client-secrets-manager": "3.338.0",
-    "@aws-sdk/client-sns": "3.337.0",
+    "@aws-sdk/client-sns": "3.338.0",
     "@aws-sdk/lib-dynamodb": "3.337.0",
     "chatgpt": "5.2.4",
     "source-map-support": "0.5.21"
