@@ -6,6 +6,6 @@
   },
   "source": "./index.ts",
   "dependencies": {
-    "@aws-sdk/client-lambda": "3.337.0"
+    "@aws-sdk/client-lambda": "3.338.0"
   }
 }
