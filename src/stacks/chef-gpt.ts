@@ -200,7 +200,7 @@ export class ChefGPT extends Stack {
         minute: "0",
         hour: "16",
         month: "*",
-        weekDay: "FRI",
+        weekDay: "THU",
       }),
       eventPattern: {
         // TODO: Pass in the menu request as the event

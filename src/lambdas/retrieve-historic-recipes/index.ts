@@ -25,7 +25,7 @@ export const lambdaHandler = async (
 
   const menuRequest: MenuRequest = {
     servings: 2,
-    numberOfMains: 4,
+    numberOfMains: 5,
     numberOfSalads: 2,
     numberOfDesserts: 0,
     avoidRecipes: [],

@@ -37,7 +37,7 @@
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "jest --watch",
     "cdk": "cdk",
-    "deploy": "cdk deploy --all"
+    "deploy": "cdk deploy --all --profile personal"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.354.0",
