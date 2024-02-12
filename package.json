@@ -12,7 +12,7 @@
     "@types/node": "20.11.17",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
-    "aws-cdk": "2.102.0",
+    "aws-cdk": "2.127.0",
     "aws-cdk-lib": "2.102.0",
     "eslint": "8.52.0",
     "eslint-config-prettier": "9.0.0",
