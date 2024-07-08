@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Generate recipes",
   "engines": {
-    "node": "18"
+    "node": "18.20.4"
   },
   "source": "./src/index.ts",
   "devDependencies": {
