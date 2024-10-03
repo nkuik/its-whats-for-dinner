@@ -2,7 +2,7 @@
   "name": "chat",
   "version": "0.0.0",
   "engines": {
-    "node": "18"
+    "node": "20.18.0"
   },
   "source": "./index.ts",
   "dependencies": {
